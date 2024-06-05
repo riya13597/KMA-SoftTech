@@ -21,6 +21,14 @@ class User extends Model
     protected $table = 'users';
 
     /**
+     * @return void
+     */
+    public function skill()
+    {
+        return $this->belongsTo(Skill::class, 'skill_id');
+    }
+
+    /**
      * @return Collection
      */
     public static function getAllData(): Collection
@@ -36,37 +44,32 @@ class User extends Model
     public static function getDataById(string $id): mixed
     {
         return self::select(['id', 'name', 'skill_id'])
+            ->with('skill')
             ->where('users.id', $id)
             ->first();
     }
 
     /**
-     * @param array $ids
+     * @param array $req
+     * @param integer $id
      * @return boolean
      */
-    public static function createData(array $req, array $ids): bool
+    public static function createData(array $req, int $id): bool
     {
-        $ids = implode(',', $ids);
-        $idsJson = json_encode($ids);
-        return self::insert(['name' => $req['name'], 'skill_id' => $ids]);
+        return self::insert(['name' => $req['name'], 'skill_id' => $id]);
     }
 
     /**
      * @param string $id
      * @param Request $req
+     * @param string $skilId
      * @return mixed
      */
-    public static function updateData(string $id, Request $req): mixed
+    public static function updateData(string $id, Request $req, string $skilId): mixed
     {
-        $id = [];
-        foreach ($req->skills as $skill) {
-            $id[] = Skill::getId(($skill));
-        }
-        $skillData = implode(',', $id);
-
         return self::where('id', $id)->update([
             'name' => $req->name,
-            'skill_id' => $skillData,
+            'skill_id' => $skilId,
         ]);
     }
 

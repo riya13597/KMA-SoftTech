@@ -23,8 +23,9 @@
                                     <td>{{ user.name }}</td>
                                     <td>
                                         <div class="d-flex gap-3">
-                                            <div class="pills" v-for="(skill, index) in user.skills" :key="index">
-                                                {{ skill }}</div>
+                                            <div class="pills">
+                                                {{ user?.skill?.name }}
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
@@ -55,7 +56,6 @@ export default {
     data() {
         return {
             users: [],
-
         }
     },
     mounted() {

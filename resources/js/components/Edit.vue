@@ -15,7 +15,6 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="itemName" class="form-label">Name:</label>
-
                             <input type="text" id="itemName" class="form-control" v-model="item.name"
                                 placeholder="Enter name" @input="validateAlphabets" required>
                             <div v-if="nameError" class="text-danger mt-1">
@@ -24,7 +23,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="itemSkills" class="form-label">Skills:</label>
-                            <input type="text" id="itemSkills" class="form-control" v-model="skillsInput"
+                            <input type="text" id="itemSkills" class="form-control" v-model="item.skill.name"
                                 placeholder="Enter skills, separated by commas" required>
                         </div>
                     </div>
@@ -37,12 +36,6 @@
     </div>
 </template>
 
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(45deg, #007bff, #6610f2);
-}
-</style>
-
 <script>
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -50,7 +43,7 @@ import axios from 'axios';
 
 export default {
     setup() {
-        const item = reactive({ id: '', name: '', skill_name: [] });
+        const item = reactive({ id: '', name: '', skill: '' });
         const route = useRoute();
         const router = useRouter();
         const successMessage = ref('');
@@ -62,18 +55,13 @@ export default {
                 const uri = `/users/${route.params.id}/edit`;
                 const response = await axios.get(uri);
                 Object.assign(item, response.data);
-
-                skillsInput.value = item.skills.join(', ');
-
-                console.log(item);
             } catch (error) {
                 console.error("Failed to fetch item:", error);
             }
         };
 
         const updateItem = async () => {
-            item.skills = skillsInput.value.split(',').map(skill => skill.trim());
-
+            item.skills = item.skill_id;
             const uri = `/users/${route.params.id}`;
             await axios.patch(uri, item);
             successMessage.value = 'Item Updated Successfully!';
@@ -106,3 +94,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #6610f2);
+}
+</style>

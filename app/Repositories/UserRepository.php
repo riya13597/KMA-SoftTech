@@ -15,15 +15,7 @@ class UserRepository
      */
     public function getUser(): Collection
     {
-        $userData = User::getAllData();
-        foreach ($userData as $data) {
-            $ids = explode(',', $data->skill_id);
-            $skills = [];
-            foreach ($ids as $id) {
-                $skills[] = Skill::getSkill($id);
-            }
-            $data->skills = $skills;
-        }
+        $userData = User::with('skill')->get();
         return $userData;
     }
 
@@ -33,14 +25,8 @@ class UserRepository
      */
     public function saveData(Request $request): bool
     {
-        $skillsData = [];
-        $skills = $request->skillsInput;
-        $ids = explode(',', $skills);
-        foreach ($ids as $id) {
-
-            $skillsData[] = Skill::getId($id);
-        }
-        $userData = User::createData($request->post(), $skillsData);
+        $skillId = Skill::getId($request->skillsInput);
+        $userData = User::createData($request->post(), $skillId);
         return $userData;
     }
 
@@ -51,12 +37,6 @@ class UserRepository
     public function editData(string $id): User
     {
         $userData = User::getDataById($id);
-        $ids = explode(',', $userData->skill_id);
-        $skills = [];
-        foreach ($ids as $id) {
-            $skills[] = Skill::getSkill($id);
-        }
-        $userData->skills = $skills;
         return $userData;
     }
 
@@ -67,6 +47,7 @@ class UserRepository
      */
     public function updateData(string $id, Request $request): void
     {
-        User::updateData($id, $request);
+        $skillId = Skill::getId($request->skill['name']);
+        User::updateData($id, $request, $skillId);
     }
 }
